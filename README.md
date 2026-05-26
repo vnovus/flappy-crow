@@ -6,6 +6,8 @@ for beginners.
 
 > Debug mode for visible colliders can be enabled by pressing `[GRAVE]`.
 
+![Game Screenshot](res/game.png)
+
 ## Compilation
 
 There is no real dependency except raylib, provided `CMakeLists.txt` file
