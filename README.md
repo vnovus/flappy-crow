@@ -17,4 +17,4 @@ $ ./build/out
 
 ## External Assets
 
-- **Bird Sprite:** [m9cian](https://ma9ici4n.itch.io/pixel-art-bird-16x16)
+- **Bird Sprite:** [ma9ici4n](https://ma9ici4n.itch.io/pixel-art-bird-16x16)
