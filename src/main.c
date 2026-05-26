@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <time.h>
+#include <math.h>
 
 #include "raylib.h"
+#include "raymath.h"
 
 // =============================================
 // Built-in Types
@@ -125,6 +127,7 @@ struct Bird {
   Vector2         position;
   Vector2         size;
   Vector2         velocity;
+  f32             rotation;
   f64             jump_time;
   AnimatedTexture texture;
 };
@@ -262,8 +265,8 @@ animated_texture_render(const AnimatedTexture *self,
 
   i32 x = self->current        % self->size[0];
   i32 y = self->current        / self->size[1];
-  f32 w = self->texture.width  / (float)self->size[0];
-  f32 h = self->texture.height / (float)self->size[1];
+  f32 w = self->texture.width  / (f32)self->size[0];
+  f32 h = self->texture.height / (f32)self->size[1];
 
   Rectangle source = {
     .x      = x * w,
@@ -382,12 +385,13 @@ bird_init(Vector2 position) {
 
   Bird b = {0};
 
-  b.alive      = true;
-  b.position   = position;
-  b.size       = (Vector2) {BIRD_WIDTH, BIRD_HEIGHT};
-  b.velocity   = VECTOR2_ZERO;
-  b.jump_time  = 0.f;
-  b.texture    = animated_texture_init("res/bird.png", 8, 1, 12);
+  b.alive     = true;
+  b.position  = position;
+  b.size      = (Vector2) {BIRD_WIDTH, BIRD_HEIGHT};
+  b.velocity  = (Vector2) {PIPE_INITIAL_SPEED, 0.f};
+  b.rotation  = 0.f;
+  b.jump_time = 0.f;
+  b.texture   = animated_texture_init("res/bird.png", 8, 1, 12);
 
   return b;
 }
@@ -402,7 +406,12 @@ void
 bird_render(const Bird *self, const State *state) {
 
   const Vector2 sprite_size = { BIRD_SPRITE_SIZE, BIRD_SPRITE_SIZE };
-  animated_texture_render(&self->texture, self->position, sprite_size, 0.f);
+  
+  animated_texture_render(
+    &self->texture,
+    self->position,
+    sprite_size,
+    self->rotation * RAD2DEG / 2.f);
 
   if (state->debug) {
     DrawRectangleLines(
@@ -420,6 +429,16 @@ bird_update(Bird *self, State *state) {
   bird_input(self, state);
 
   if (!state->pause) {
+
+    // Calculate the rotation for the bird's sprite.
+    Vector2 normalized = Vector2Normalize(self->velocity);
+
+    if (self->alive) {
+      self->rotation = atan2f(normalized.y, normalized.x);
+    } else {
+      self->rotation += PI * GetFrameTime();
+    }
+
     bird_apply_gravity(self);
   }
 

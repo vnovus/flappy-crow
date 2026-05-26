@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(flappy-crow VERSION 0.1.0 LANGUAGES C)
+project(flappy-crow VERSION 0.1.1 LANGUAGES C)
 
 # Set project properties.
 set(CMAKE_C_STANDARD              99)
